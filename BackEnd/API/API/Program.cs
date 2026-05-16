@@ -1,4 +1,7 @@
 
+using DAL.data;
+using Microsoft.EntityFrameworkCore;
+
 namespace API
 {
     public class Program
@@ -7,10 +10,16 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                    x => x.MigrationsAssembly("DAL") 
+                );
+            });
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
