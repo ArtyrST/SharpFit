@@ -1,6 +1,11 @@
-
+using BLL.Settings;
 using DAL.data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using AutoMapper;
+
 
 namespace API
 {
@@ -19,8 +24,34 @@ namespace API
             });
 
             builder.Services.AddControllers();
+            // Register AutoMapper profiles from BLL
             
+
             builder.Services.AddOpenApi();
+            builder.Services.AddAuthorization();
+
+            builder.Services.Configure<JwtSettings>(
+                builder.Configuration.GetSection("JwtSettings"));
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+
+            .AddJwtBearer(options =>
+            {
+                var config = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = config.Issuer,
+                    ValidAudience = config.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(config.Key))
+                };
+            });
 
             var app = builder.Build();
 
@@ -32,6 +63,7 @@ namespace API
 
             app.UseHttpsRedirection();
 
+            
             app.UseAuthorization();
 
 

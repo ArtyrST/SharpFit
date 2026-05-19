@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FitnessCenter.DTOs;
 using FitnessCenter.Services;
+using BLL.DTO;
 
 namespace FitnessCenter.Controllers
 {
@@ -35,5 +36,28 @@ namespace FitnessCenter.Controllers
                 });
             }
         }
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterRequest request)
+        {
+            try
+            {
+                var result = _authService.Register(request);
+
+                // Return 201 Created on success
+                return Created(string.Empty, new
+                {
+                    message = result
+                });
+            }
+            catch (Exception ex)
+            {
+                // Return 400 Bad Request on error
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+        
     }
 }
