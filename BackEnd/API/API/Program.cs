@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
+using FitnessCenter.Services;
 
 
 namespace API
@@ -29,6 +30,8 @@ namespace API
 
             builder.Services.AddOpenApi();
             builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<AuthService>();
 
             builder.Services.Configure<JwtSettings>(
                 builder.Configuration.GetSection("JwtSettings"));
